@@ -57,7 +57,7 @@ async function load(start=1){
   document.title=title+" · 整卷阅读";el("source").href="https://downloads.lazynote.cn/cet"+level+"/"+[year,month,set].join("-")+"/"+encodeURIComponent(title+".pdf");
   el("sheet").replaceChildren();el("sheet").hidden=false;el("status").textContent="正在打开"+title+"…";
   try{
-    loadTask=getDocument({url:"/original/"+key+"-"+kind+".pdf",isEvalSupported:false,cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/cmaps/",cMapPacked:true,standardFontDataUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/standard_fonts/"});
+    loadTask=getDocument({url:"/original/"+key+"-"+kind+".pdf",rangeChunkSize:262144,disableStream:true,disableAutoFetch:true,isEvalSupported:false,cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/cmaps/",cMapPacked:true,standardFontDataUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/standard_fonts/"});
     const loaded=await loadTask.promise;if(seq!==generation)return;
     doc=loaded;pageCount=doc.numPages;pageNumber=Math.min(pageNumber,pageCount);nav();await draw();
   }catch(e){if(seq===generation)error()}
