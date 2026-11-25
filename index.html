@@ -339,6 +339,7 @@ a.card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);text-deco
     </a>
     <nav class="mainnav" id="mainnav" data-page-node-id="9qiRBLt58UJkW92rJeByfg">
       <a href="#/library" data-nav="library" data-page-node-id="wwyLa1kUJdBlB0bdCfEAYs">资料库</a>
+      <a href="/papers.html">整卷阅读</a>
       <a href="#/courses" data-nav="courses" data-page-node-id="DK1NU3cSA98g2l9DBLatCv">课程</a>
       <a href="#/practice" data-nav="practice" data-page-node-id="oZQg9Gf964QOhOU7aZtFMk">题库</a>
       <a href="#/plan" data-nav="plan" data-page-node-id="WBJE88PF89gKyAWPojT1Og">学习计划</a>
@@ -732,7 +733,7 @@ function taskMiniRow(tk){const st=taskStatus(tk);
   '<div class="t-acts">'+(tk.link&&!tk.done?'<a class="btn btn-outline btn-sm" href="'+tk.link+'">继续任务</a>':'')+
   (!tk.done?'<button class="btn btn-text btn-sm" data-task-toggle="'+tk.id+'">标为完成</button>':'')+'</div></div>'}
 function vHome(){
-  const cards=[['历年整卷','2015–2026 · CET-4 / CET-6','#/library?type=试卷'],['题型解析','答案、考点与解题思路','#/practice'],['分级词汇','四级基础 · 六级进阶','#/study/words']];
+  const cards=[['整卷阅读','历年试题与答案 · 按原页翻阅','/papers.html'],['题型解析','答案、考点与解题思路','#/practice'],['分级词汇','四级基础 · 六级进阶','#/study/words']];
   const links=[['专题例句','quote','#/study/sentences'],['语法','layers','#/sentence/s1'],['听力','audio','#/practice?m=listening'],['阅读','doc','#/practice?m=reading'],['写作','pen','#/practice?m=writing'],['翻译','swap','#/practice?m=translation'],['口语','mic','#/practice?m=speaking']];
   app.innerHTML='<section class="desk-hero"><div class="container"><div class="desk-copy"><h1>四六级真题<br>专项备考</h1><p>查真题、练专项题型，按计划备考。</p><form class="searchbox" id="heroSearch">'+ic('search')+'<input type="search" aria-label="搜索资料" placeholder="搜索年份、题型或关键词"><button class="btn-text">搜索</button></form><div class="hero-cta"><a class="btn btn-primary" href="#/practice">开始练习</a><a class="btn btn-outline" href="#/library">浏览资料</a></div></div></div></section>'+
   '<div class="container desk-sections"><h2 class="desk-title"><span>备考资料</span></h2><div class="desk-cards">'+cards.map(([title,desc,url],i)=>'<a class="desk-card" href="'+url+'"><img alt="" src="paper'+i+'.webp"><div><strong>'+title+'</strong><small>'+desc+'</small>→</div></a>').join('')+'</div><h2 class="desk-title"><span>专项训练</span></h2><div class="desk-links">'+links.map(([label,icon,url])=>'<a href="'+url+'">'+ic(icon)+'<span>'+label+'</span></a>').join('')+'</div></div>';
