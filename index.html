@@ -328,6 +328,7 @@ a.card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);text-deco
 }
 </style>
 </style>
+<link rel="stylesheet" href="desk.css">
 </head>
 <body data-page-node-id="46WNGINw7IOpLGuOu60Sg2">
 <header class="topbar" data-page-node-id="7wYWvV1vobFavM2QnTFjZ8">
@@ -593,8 +594,8 @@ const COURSES=[
   {id:'c4',name:'六级阅读长难句拆解',level:'CET-6',lessons:15,status:'doing',progress:60,desc:'以真题长难句为素材，训练主干提取与从句嵌套分析。',outline:['主干提取：三步法','从句嵌套：定语从句与同位语','特殊结构：倒装与强调句']}
 ];
 const MODULES=[
-  {id:'vocab',name:'真题词汇',desc:'按词频背诵历年真题词汇，带语境例句',tags:['CET-4','CET-6','词频排序'],act:'背真题词汇',icon:'book'},
-  {id:'grammar',name:'长难句语法',desc:'拆解真题长难句，主干与从句一目了然',tags:['CET-4','CET-6','每日一句'],act:'拆解长难句',icon:'layers'},
+  {id:'vocab',name:'真题词汇',desc:'按四级和六级分别检索、记忆常用词',tags:['CET-4','CET-6','词频排序'],act:'背真题词汇',icon:'book'},
+  {id:'grammar',name:'专题例句与语法',desc:'按考试级别与话题学习双语例句',tags:['CET-4','CET-6','每日一句'],act:'学习专题例句',icon:'layers'},
   {id:'listening',name:'听力',desc:'精听五步法训练，支持逐句循环与盲听',tags:['CET-4','CET-6','精听'],act:'练听力',icon:'audio'},
   {id:'reading',name:'阅读',desc:'仔细阅读 + 长篇阅读专项，逐题解析',tags:['CET-4','CET-6','题型专项'],act:'练阅读',icon:'doc'},
   {id:'writing',name:'写作',desc:'真题范文 + 可迁移句式模板',tags:['CET-4','CET-6','范文'],act:'练写作',icon:'pen'},
@@ -702,7 +703,7 @@ const app=document.getElementById('app');
 const NAVMAP={home:null,library:'library',paper:'library',passage:'library',sentence:'library',word:'library',courses:'courses',course:'courses',practice:'practice',plan:'plan'};
 function route(){showSkeleton();const r=parseHash();
   document.querySelectorAll('#mainnav a').forEach(a=>{a.classList.toggle('active',a.dataset.nav===NAVMAP[r.view])});
-  const VIEWS={home:vHome,library:vLibrary,paper:vPaper,passage:vPassage,sentence:vSentence,word:vWord,courses:vCourses,course:vCourse,practice:vPractice,plan:vPlan};
+  const VIEWS={study:studyBank,home:vHome,library:vLibrary,paper:vPaper,passage:vPassage,sentence:vSentence,word:vWord,courses:vCourses,course:vCourse,practice:vPractice,plan:vPlan};
   (VIEWS[r.view]||vHome)(r.param,r.query);
   if(!r.query._keepScroll){window.scrollTo(0,0)}}
 window.addEventListener('hashchange',route);
@@ -730,35 +731,13 @@ function taskMiniRow(tk){const st=taskStatus(tk);
   '<span class="status st-'+st+'">'+stTxt+'</span>'+
   '<div class="t-acts">'+(tk.link&&!tk.done?'<a class="btn btn-outline btn-sm" href="'+tk.link+'">继续任务</a>':'')+
   (!tk.done?'<button class="btn btn-text btn-sm" data-task-toggle="'+tk.id+'">标为完成</button>':'')+'</div></div>'}
-function vHome(){const tasks=loadTasks().filter(t=>t.date===todayStr());
-  app.innerHTML=
-  '<section class="hero"><div class="container hero-grid">'+
-    '<div class="hero-copy"><h1>四六级真题与专项备考</h1>'+
-    '<p class="sub">查 2015—2026 历年真题，按词汇、听力、阅读等专项训练，并用学习计划记录每一天的进度。</p>'+
-    '<form class="searchbox" id="heroSearch">'+ic('search')+
-    '<input id="heroKw" type="search" placeholder="搜索年份、题型或关键词，如 2024 四级阅读" aria-label="全站搜索"><button class="btn btn-primary btn-sm" type="submit">搜索</button></form>'+
-    '<div class="hero-cta"><a class="btn btn-primary" href="#/practice">开始练习</a><a class="btn btn-outline" href="#/library">浏览资料</a></div></div>'+
-    '<div class="hero-side">'+heroCardHTML()+'</div>'+
-  '</div></section>'+
-  '<div class="container">'+
-  '<section class="section" id="cats"><div class="section-head"><h2>资料分类</h2><a class="more" href="#/library">进入资料库</a></div>'+
-  '<div class="grid cat-grid">'+CAT_ENTRIES.map(c=>'<a class="card cat-card" href="'+c.hash+'"><span class="cat-ic">'+ic(c.icon)+'</span><b>'+c.name+'</b><span>'+c.desc+'</span></a>').join('')+'</div></section>'+
-  '<section class="section"><div class="section-head"><h2>专题训练</h2><a class="more" href="#/practice">全部练习</a></div>'+
-  '<div class="grid skill-grid">'+MODULES.map(m=>'<div class="card skill-card"><span class="sk-ic">'+ic(m.icon)+'</span><h3>'+m.name+'</h3><p>'+m.desc+'</p><div class="sk-tags">'+m.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><a class="btn btn-outline btn-sm" href="#/practice?m='+m.id+'">'+m.act+'</a></div>').join('')+'</div></section>'+
-  '<section class="section"><div class="section-head"><h2>课程</h2><a class="more" href="#/courses">全部课程</a></div>'+
-  '<div class="grid course-grid">'+COURSES.slice(0,3).map(c=>courseCardHTML(c)).join('')+'</div></section>'+
-  '<section class="section"><div class="section-head"><h2>题库</h2></div>'+
-  '<div class="grid practice-duo">'+
-  '<div class="card practice-card"><h3>按题型练习</h3><ul><li>自由选择写作 / 听力 / 阅读 / 翻译任一专项</li><li>按年份、考点筛选真题，逐题查看解析</li><li>练习模式：边做边查，交卷后标注对错</li></ul><a class="btn btn-primary" href="#/practice?mode=topic">按题型练习</a></div>'+
-  '<div class="card practice-card"><h3>整套模考</h3><ul><li>按真实考试流程计时作答</li><li>客观题交卷即判分，按 710 分制估分</li><li>成绩单保留每次记录，对比进步曲线</li></ul><a class="btn btn-outline" href="#/practice?mode=mock">做整套模考</a></div>'+
-  '</div></section>'+
-  '<section class="section"><div class="section-head"><h2>今日学习计划</h2><a class="more" href="#/plan">完整记录</a></div>'+
-  '<div class="card plan-mini">'+
-  (tasks.length?tasks.map(taskMiniRow).join(''):'<div class="empty">'+ic('calendar')+'<b>今天还没有任务</b>添加一个任务，把大目标拆成每天可做的小事。</div>')+
-  '<div style="margin-top:14px"><a class="btn btn-outline btn-sm" href="#/plan?new=1">+ 添加任务</a></div></div></section>'+
-  '</div>';
-  document.getElementById('heroSearch').addEventListener('submit',e=>{e.preventDefault();const kw=document.getElementById('heroKw').value.trim();go('#/library?kw='+encodeURIComponent(kw))});
-  bindTaskToggles()}
+function vHome(){
+  const cards=[['历年整卷','2015–2026 · CET-4 / CET-6','#/library?type=试卷'],['题型解析','答案、考点与解题思路','#/practice'],['分级词汇','四级基础 · 六级进阶','#/study/words']];
+  const links=[['专题例句','quote','#/study/sentences'],['语法','layers','#/sentence/s1'],['听力','audio','#/practice?m=listening'],['阅读','doc','#/practice?m=reading'],['写作','pen','#/practice?m=writing'],['翻译','swap','#/practice?m=translation'],['口语','mic','#/practice?m=speaking']];
+  app.innerHTML='<section class="desk-hero"><div class="container"><div class="desk-copy"><h1>四六级真题<br>专项备考</h1><p>查真题、练专项题型，按计划备考。</p><form class="searchbox" id="heroSearch">'+ic('search')+'<input type="search" aria-label="搜索资料" placeholder="搜索年份、题型或关键词"><button class="btn-text">搜索</button></form><div class="hero-cta"><a class="btn btn-primary" href="#/practice">开始练习</a><a class="btn btn-outline" href="#/library">浏览资料</a></div></div></div></section>'+
+  '<div class="container desk-sections"><h2 class="desk-title"><span>备考资料</span></h2><div class="desk-cards">'+cards.map(([title,desc,url],i)=>'<a class="desk-card" href="'+url+'"><img alt="" src="paper'+i+'.webp"><div><strong>'+title+'</strong><small>'+desc+'</small>→</div></a>').join('')+'</div><h2 class="desk-title"><span>专项训练</span></h2><div class="desk-links">'+links.map(([label,icon,url])=>'<a href="'+url+'">'+ic(icon)+'<span>'+label+'</span></a>').join('')+'</div></div>';
+  document.getElementById('heroSearch').onsubmit=e=>{e.preventDefault();go('#/library?kw='+encodeURIComponent(e.target.querySelector('input').value.trim()))};
+}
 /* ==================== 视图：资料库 ==================== */
 const LIB_KEY='zhLibState';
 function libDefault(){return{years:[],levels:[],types:[],kw:''}}
@@ -776,7 +755,7 @@ function vLibrary(param,query){const st=loadLibState();
   const showWords=st.kw||st.types.includes('单词');
   let wordsHit=[];
   if(showWords){const k=st.kw?st.kw.toLowerCase():null;
-    wordsHit=Object.keys(WORDS).filter(id=>!k||WORDS[id].w.includes(k)||WORDS[id].mean.includes(st.kw)||WORDS[id].ctx.includes(st.kw))}
+    wordsHit=Object.keys(WORDS).filter(id=>(!st.levels.length||st.levels.includes(WORDS[id].bank===1?'CET-6':'CET-4'))&&(!k||WORDS[id].w.includes(k)||WORDS[id].mean.includes(st.kw)||WORDS[id].ctx.includes(st.kw)))}
   const papersHit=PAPERS.filter(matches);
   const total=papersHit.length+wordsHit.length;
   function chipRow(label,key,list){return '<div class="f-row"><span class="f-label">'+label+'</span>'+list.map(v=>{
@@ -792,15 +771,17 @@ function vLibrary(param,query){const st=loadLibState();
     (activeConds.length?'<div class="active-conds">已选条件：'+activeConds.map(c=>'<span class="cond">'+esc(c[1])+'<button data-lib-clear="'+c[0]+'" data-lib-val="'+esc(c[1])+'" aria-label="移除">'+ic('x')+'</button></span>').join('')+'<button class="clear-all" id="libClearAll">清空全部</button></div>':'')+
   '</div></div>'+
   '<div class="result-list">'+
-  (total===0?'<div class="empty">'+ic('search')+'<b>没有找到匹配的内容</b>试试减少筛选条件，或更换关键词。</div>':'')+
+  (showWords?'<div class="bank-tabs"><a class="chip" href="#/study/words?level=4&q='+encodeURIComponent(st.kw||'')+'">浏览四级词库</a><a class="chip" href="#/study/words?level=6&q='+encodeURIComponent(st.kw||'')+'">浏览六级词库</a></div>':'')+
+  (st.types.includes('句子')?'<a class="card study-line" href="#/study/sentences">专题例句 · 四六级双语练习 →</a>':'')+
+  (total===0&&!st.types.includes('句子')?'<div class="empty">'+ic('search')+'<b>没有找到匹配的内容</b>试试减少筛选条件，或更换关键词。</div>':'')+
   (papersHit.length?'<div class="f-label" style="width:auto">试卷（'+papersHit.length+'）</div>':'')+
   papersHit.map(p=>'<a class="card paper-item" href="#/paper/'+p.id+'" data-lib-go>'+
     '<span class="type-badge">试卷</span><div class="pi-main"><h3>'+paperTitle(p)+(p.full?'':' <span class="tag" style="margin-left:6px">示例 · 内容建设中</span>')+'</h3>'+
     '<div class="pi-meta"><span>'+p.year+'年'+p.month+'</span><span>'+p.level+'</span><span>第 '+p.set+' 套</span><span>'+(p.full?(p.partial?'部分解析':'解析完整'):'题目目录')+'</span></div></div><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="M19 12H5m7-7-7 7 7 7"/></svg></a>').join('')+
   (wordsHit.length?'<div class="f-label" style="width:auto;margin-top:6px">真题词汇（'+wordsHit.length+'）</div>':'')+
-  wordsHit.map(id=>'<a class="card paper-item" href="#/word/'+id+'">'+
-    '<span class="type-badge word">单词</span><div class="pi-main"><h3>'+WORDS[id].w+' <span class="muted" style="font-size:13px;font-weight:400">'+WORDS[id].pos+' '+WORDS[id].mean+'</span></h3>'+
-    '<div class="pi-meta"><span>'+WORDS[id].level+'</span><span>语境：'+esc(WORDS[id].ctx.slice(0,30))+'…</span></div></div><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="M19 12H5m7-7-7 7 7 7"/></svg></a>').join('')+
+  wordsHit.slice(0,32).map(id=>'<a class="card paper-item" href="#/word/'+id+'">'+
+    '<span class="type-badge word">单词</span><div class="pi-main"><h3>'+WORDS[id].w+' <span class="muted" style="font-size:13px;font-weight:400">'+esc(WORDS[id].pos)+' '+esc(WORDS[id].mean)+'</span></h3>'+
+    '<div class="pi-meta"><span>'+WORDS[id].level+'</span><span>'+esc(WORDS[id].ctx.slice(0,30))+'</span></div></div><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="M19 12H5m7-7-7 7 7 7"/></svg></a>').join('')+
   '</div></div>';
   const bar=document.getElementById('filterbar');
   document.getElementById('fToggle').addEventListener('click',()=>bar.classList.toggle('open'));
@@ -896,12 +877,12 @@ function vWord(id){const w=WORDS[id];if(!w){app.innerHTML='<div class="container
   const m=getMastery()[id];
   const back=[['返回资料库','#/library']];
   app.innerHTML='<div class="container read-layout">'+
-  '<div class="crumbs"><a href="#/library">资料库</a> / 真题词汇</div>'+
+  '<div class="crumbs"><a href="#/library">资料库</a> / <a href="#/study/words?level='+(w.bank===1?6:4)+'">分级词库</a></div>'+
   '<div class="read-card"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:8px"><span class="word-big">'+w.w+'</span><span class="phonetic">'+w.ph+'</span><span class="tag tag-blue">'+w.level+'</span></div>'+
   '<p style="margin-top:10px;font-size:16px"><b>'+w.pos+'</b> '+esc(w.mean)+'</p>'+
-  '<div class="ctx-box"><div class="a-tag">原文语境义（优先记忆）</div><p style="font-size:14.5px;margin-top:4px">'+esc(w.ctx)+'</p></div>'+
-  '<h2 style="font-size:18px;margin-top:20px">考点与搭配</h2><ul style="margin:8px 0 0 18px;font-size:14.5px;color:var(--text-2)">'+w.points.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>'+
-  '<h2 style="font-size:18px;margin-top:20px">真题例句</h2><div style="margin-top:6px">'+w.examples.map(e=>'<div class="example-item"><span class="en">'+esc(e.en)+'</span><span class="src">'+esc(e.src)+' · <a href="#/plan?new=1&title='+encodeURIComponent('背真题词：'+w.w)+'">加入生词任务</a></span></div>').join('')+'</div>'+
+  (w.ctx?'<div class="ctx-box"><div class="a-tag">原文语境义（优先记忆）</div><p style="font-size:14.5px;margin-top:4px">'+esc(w.ctx)+'</p></div>':'')+
+  (w.points.length?'<h2 style="font-size:18px;margin-top:20px">考点与搭配</h2><ul style="margin:8px 0 0 18px;font-size:14.5px;color:var(--text-2)">'+w.points.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>':'')+
+  (w.examples.length?'<h2 style="font-size:18px;margin-top:20px">语境例句</h2><div style="margin-top:6px">'+w.examples.map(e=>'<div class="example-item"><span class="en">'+esc(e.en)+'</span><span class="src">'+esc(e.src)+' · <a href="#/plan?new=1&title='+encodeURIComponent('背真题词：'+w.w)+'">加入生词任务</a></span></div>').join('')+'</div>':'')+
   '<h2 style="font-size:18px;margin-top:20px">掌握度</h2><div class="word-mastery">'+
   [['unknown','不认识'],['vague','模糊'],['know','已掌握']].map(x=>'<button class="wm-chip'+(m===x[0]?' on':'')+'" data-mastery="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'+
   '<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-primary btn-sm" href="#/plan?new=1&title='+encodeURIComponent('背真题词：'+w.w)+'">加入学习计划</a></div>'+
@@ -939,7 +920,7 @@ function vCourse(id){const c=COURSES.find(x=>x.id===id);if(!c){vCourses();return
 /* ==================== 视图：题库 ==================== */
 function vPractice(param,query){const mode=query.mode||(query.m?'topic':'topic');
   const topicMods=MODULES.filter(m=>['vocab','grammar','listening','reading','writing','translation','speaking'].includes(m.id));
-  const topicTarget={listening:'#/paper/2024-06-cet4-1',reading:'#/paper/2026-06-cet4-1',translation:'#/paper/2026-06-cet4-1',writing:'#/paper/2024-06-cet4-1',vocab:'#/word/development',grammar:'#/sentence/s1'};
+  const topicTarget={listening:'#/paper/2024-06-cet4-1',reading:'#/paper/2026-06-cet4-1',translation:'#/paper/2026-06-cet4-1',writing:'#/paper/2024-06-cet4-1',vocab:'#/study/words',grammar:'#/study/sentences'};
   const fullPapers=PAPERS.filter(p=>p.full);
   app.innerHTML='<div class="container">'+
   '<div class="page-head"><div class="crumbs"><a href="#/home">首页</a> / 题库</div><h1>题库</h1><p class="desc">先选考试级别，再按题型专项练习或做整套模考。交卷即判分，逐题解析自动归档到错题本。</p></div>'+
@@ -1024,7 +1005,10 @@ document.addEventListener('click',e=>{
   const del=e.target.closest('[data-task-del]');
   if(del){const ts=loadTasks().filter(x=>x.id!==del.dataset.taskDel);saveTasks(ts);toast('任务已删除');const y=window.scrollY;route();requestAnimationFrame(()=>window.scrollTo(0,y))}});
 /* ==================== 启动 ==================== */
-route();
 </script>
+<script src="lexicon.js"></script>
+<script src="examples.js"></script>
+<script src="study.js"></script>
+<script>route();</script>
 </body>
 </html>
